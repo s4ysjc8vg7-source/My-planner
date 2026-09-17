@@ -1,14 +1,25 @@
-const KEY='myplanner.web.v4';
+const KEY='myplanner.data';
+const LEGACY_KEYS=['myplanner.web.v4','myplanner.web.v3','myplanner.web.v2','myplanner_tasks','myplanner'];
+function loadPersistedState(){
+  let found=null, source=null;
+  for(const k of [KEY,...LEGACY_KEYS]){
+    try{const raw=localStorage.getItem(k); if(raw){const x=JSON.parse(raw); if(x&&typeof x==='object'){found=x;source=k;break}}}catch(e){}
+  }
+  if(found && source!==KEY){
+    try{localStorage.setItem(KEY,JSON.stringify(found)); localStorage.setItem('myplanner.last_migration',JSON.stringify({from:source,at:new Date().toISOString()}));}catch(e){}
+  }
+  return found;
+}
 const praise=['Ты большая молодец!','Готово — ещё один шаг!','Отличная работа!','Так держать!','Ты справилась!','Маленькая победа — тоже победа!','План выполнен — умница!','Ещё один пункт закрыт!','Вот это продуктивность!','Ты двигаешься вперёд!','Можно выдохнуть — дело закрыто!','Красиво выполнено!'];
 const repeatOptions=['Не повторять','Каждые 5 минут','Каждые 15 минут','Каждые 30 минут','Каждый час','Каждый день','Каждую неделю','Каждый месяц','Каждый год','Произвольный интервал'];
 const defaultGroups=[{id:'g1',name:'Личное',icon:'❤️',color:'#a16bd3',system:true},{id:'g2',name:'Работа',icon:'💼',color:'#5b7cfa',system:true},{id:'g3',name:'Дом',icon:'🏠',color:'#58a66a',system:true},{id:'g4',name:'Семья',icon:'👨‍👩‍👧‍👦',color:'#d95f7a',system:true}];
 const defaultSettings={sound:true,defaultReminderOffset:'10m',defaultSound:'standard',focusHorizon:3,focusPreviewHour:19,theme:'system',background:{type:'solid',value:'#f5f7fb'},cardStyle:'comfortable'};
-const old=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem('myplanner.web.v3')||localStorage.getItem('myplanner.web.v2')||'null');
+const old=loadPersistedState();
 let state=old&&typeof old==='object'?old:{tasks:[],groups:[],notes:[],events:[],focusIds:[],focusRules:{},view:'day',date:iso(new Date()),query:'',filter:'all',group:'all',statsPeriod:'today',settings:defaultSettings};
 state.tasks=Array.isArray(state.tasks)?state.tasks:[];state.groups=Array.isArray(state.groups)?state.groups:[];state.notes=Array.isArray(state.notes)?state.notes:[];state.events=Array.isArray(state.events)?state.events:[];state.focusIds=Array.isArray(state.focusIds)?state.focusIds:[];state.focusRules=state.focusRules||{};state.settings={...defaultSettings,...(state.settings||{}),background:{...defaultSettings.background,...((state.settings||{}).background||{})}};
 defaultGroups.forEach(g=>{if(!state.groups.some(x=>x.name===g.name))state.groups.push({...g})});
 state.tasks.forEach(t=>{if(t.reminder===undefined)t.reminder=false;if(t.reminderSound===undefined)t.reminderSound=true;if(t.reminderOffset===undefined)t.reminderOffset=state.settings.defaultReminderOffset;if(t.sound===undefined)t.sound=state.settings.defaultSound;if(t.comment===undefined)t.comment=t.notes||'';if(t.done===undefined)t.done=false;if(t.allDay===undefined)t.allDay=false;if(t.repeat===undefined)t.repeat='Не повторять';if(t.important===undefined)t.important=false;if(t.priority===undefined)t.priority='Средний';if(t.interval===undefined)t.interval=1;if(t.unit===undefined)t.unit='days'});
-function save(){localStorage.setItem(KEY,JSON.stringify(state))} function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)} function iso(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)} function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))} function fmtDate(s){return new Date(s+'T12:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})} function parseDate(s){return new Date(s+'T12:00')}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){console.error('MyPlanner save failed',e)}} function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)} function iso(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)} function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))} function fmtDate(s){return new Date(s+'T12:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})} function parseDate(s){return new Date(s+'T12:00')}
 function app(){document.body.dataset.theme=state.settings.theme;applyBackground();document.querySelector('#app').innerHTML=`<main class="app"><header class="top"><div class="toprow"><div><div class="title">MyPlanner</div><div class="sub">${fmtDate(state.date)}</div></div><button onclick="quick()">+ Быстро</button></div><div class="nav">${[['day','День'],['week','Неделя'],['month','Месяц'],['focus','Фокус'],['stats','Статистика'],['notes','Заметки'],['settings','⚙️ Настройки']].map(x=>`<button class="${state.view===x[0]?'active':''}" onclick="setView('${x[0]}')">${x[1]}</button>`).join('')}</div></header>${renderView()}<button class="fab" onclick="editTask()">+</button><div id="praise"></div></main>`;startReminderWatcher()}
 function setView(v){state.view=v;save();app()} function renderView(){if(state.view==='notes'&&state.noteOpen)return noteBrowser();return ({day,week,month,focus,stats,notes,settings}[state.view]||day)()}
 function tasksForDate(s){return state.tasks.filter(t=>t.date===s)}
