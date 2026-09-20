@@ -10,3 +10,9 @@
 /* Компактная кнопка удаления задачи */
 .task-delete{flex:0 0 auto;width:30px;height:30px;padding:0;border:0;background:transparent;border-radius:9px;font-size:16px;opacity:.55;display:grid;place-items:center}.task-delete:active{transform:scale(.92);opacity:1}.task-delete:hover{opacity:.9;background:#f2f3f6}
 
+
+.week-day summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;list-style:none}
+.week-day summary::-webkit-details-marker{display:none}
+.week-day summary:before{content:'›';display:inline-block;margin-right:9px;transition:transform .15s}
+.week-day[open] summary:before{transform:rotate(90deg)}
+.week-items{padding-top:12px}
