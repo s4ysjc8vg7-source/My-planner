@@ -16,3 +16,10 @@
 .week-day summary:before{content:'›';display:inline-block;margin-right:9px;transition:transform .15s}
 .week-day[open] summary:before{transform:rotate(90deg)}
 .week-items{padding-top:12px}
+/* V23: task/group color and inline note sections */
+.task-card[style*="background"]{border-color:rgba(80,90,110,.12)}
+.color-preview{min-width:56px;min-height:24px;vertical-align:middle;margin-left:8px;text-align:center;font-size:12px}
+.note-open{display:block;width:100%;text-align:left;background:transparent;border:0;color:inherit;padding:0}
+.inline-note-section summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.inline-note-section summary::-webkit-details-marker{display:none}
+.inline-note-contents{padding:8px 0 8px 18px;border-left:2px solid #e3e7ef;margin:8px 0 8px 8px}
