@@ -91,10 +91,12 @@ function noteCompare(a,b,mode){
  return mode==='old'?ad-bd:bd-ad;
 }
 function noteFolderCard(n){
- const folders=(n.items||[]).filter(x=>x.type==='section').length;
- const files=(n.items||[]).filter(x=>x.type==='file').length;
- const texts=(n.items||[]).filter(x=>x.type==='text').length;
- return `<section class="card note-folder"><button class="note-open" onclick="openNote('${n.id}')"><div class="folder-row"><div class="big-folder">📁</div><div class="grow"><h3>${esc(n.title)}</h3><div class="small">${folders} папок · ${files} файлов · ${texts} записей</div><div class="small">Изменено: ${new Date(n.updated||Date.now()).toLocaleDateString('ru-RU')}</div></div><span class="folder-arrow">›</span></div></button><button class="danger" onclick="event.stopPropagation();if(confirm('Удалить папку и всё её содержимое?'))delNote('${n.id}')">🗑 Удалить</button></section>`
+ const items=Array.isArray(n.items)?n.items:[];
+ const folders=items.filter(x=>x.type==='section').length;
+ const files=items.filter(x=>x.type==='file').length;
+ const texts=items.filter(x=>x.type==='text').length;
+ const content=items.length?items.map(it=>renderNoteEntry(it,n.id)).join(''):'<div class="small note-empty">Папка пока пуста. Добавь текст, вложенную папку, фото или файл.</div>';
+ return `<section class="card note-folder"><details class="top-note-disclosure"><summary><div class="folder-row"><div class="big-folder">📁</div><div class="grow"><h3>${esc(n.title)}</h3><div class="small">${folders} папок · ${files} файлов · ${texts} записей</div><div class="small">Изменено: ${new Date(n.updated||Date.now()).toLocaleDateString('ru-RU')}</div></div><span class="folder-arrow" aria-hidden="true">›</span></div></summary><div class="top-note-content"><div class="note-entry-list">${content}</div><button class="primary note-add-button" onclick="addNoteItem('${n.id}')">＋ Добавить в папку</button></div></details><button class="danger note-delete-button" onclick="if(confirm('Удалить эту папку и всё её содержимое? Это действие нельзя отменить.'))delNote('${n.id}')">🗑 Удалить папку</button></section>`
 }
 function openNote(id){state.noteOpen=id;state.notePath=[];app()}
 function closeNote(){state.noteOpen=null;state.notePath=[];app()}
@@ -117,7 +119,7 @@ function noteBrowser(){
  return `<section class="card note-browser-head"><div class="between"><button onclick="${inRoot?'closeNote()':'state.notePath.pop();app()'}">← Назад</button><div class="folder-title"><span>📁</span><b>${esc(noteContainerTitle(n))}</b></div><button onclick="addNoteItem('${n.id}',${state.notePath.length?`'${state.notePath[state.notePath.length-1]}'`:'null'})">＋</button></div><div class="toolbar"><select class="input" style="max-width:230px" onchange="state.noteSortItems=this.value;save();app()"><option value="new" ${(state.noteSortItems||'new')==='new'?'selected':''}>Сначала новые</option><option value="old" ${state.noteSortItems==='old'?'selected':''}>Сначала старые</option><option value="az" ${state.noteSortItems==='az'?'selected':''}>По названию А–Я</option><option value="za" ${state.noteSortItems==='za'?'selected':''}>По названию Я–А</option><option value="files" ${state.noteSortItems==='files'?'selected':''}>Сначала файлы</option><option value="text" ${state.noteSortItems==='text'?'selected':''}>Сначала текст</option></select></div></section>${items.length?`<section class="card folder-list">${items.map(it=>renderNoteEntry(it,n.id)).join('')}</section>`:'<div class="empty">Папка пуста.<br>Добавь сюда папку, текст, фото или файл.</div>'}`
 }
 function renderNoteEntry(it,nid){
- if(it.type==='section')return `<details class="file-row folder-entry inline-note-section"><summary><span class="entry-icon">📁</span><span class="grow"><b>${esc(it.text)}</b><small>${(it.items||[]).length} элементов</small></span></summary><div class="inline-note-contents">${(it.items||[]).map(child=>renderNoteEntry(child,nid)).join('')||'<small>Папка пуста</small>'}</div><button class="danger" onclick="if(confirm('Удалить папку и всё её содержимое?'))deleteNoteItem('${nid}','${it.id}')">🗑 Удалить</button></details>`;
+ if(it.type==='section')return `<details class="file-row folder-entry inline-note-section"><summary><span class="entry-icon">📁</span><span class="grow"><b>${esc(it.text)}</b><small>${(it.items||[]).length} элементов</small></span></summary><div class="inline-note-contents">${(it.items||[]).map(child=>renderNoteEntry(child,nid)).join('')||'<small>Папка пуста</small>'}<button class="note-add-button" onclick="addNoteItem('${nid}','${it.id}')">＋ Добавить сюда</button></div><button class="danger" onclick="deleteNoteItem('${nid}','${it.id}')">🗑 Удалить папку</button></details>`;
  if(it.type==='file'){
   const isImg=(it.mime||'').startsWith('image/');
   return `<button class="file-row" onclick="event.stopPropagation();openNoteFile('${nid}','${it.id}')"><span class="entry-icon">${isImg?'🖼️':'📄'}</span><span class="grow"><b>${esc(it.name||'Файл')}</b><small>${new Date(it.created||Date.now()).toLocaleString('ru-RU')}</small></span><span>›</span></button><button class="danger" onclick="deleteNoteItem('${nid}','${it.id}')">🗑</button>`

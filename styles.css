@@ -23,3 +23,22 @@
 .inline-note-section summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
 .inline-note-section summary::-webkit-details-marker{display:none}
 .inline-note-contents{padding:8px 0 8px 18px;border-left:2px solid #e3e7ef;margin:8px 0 8px 8px}
+
+/* V24: visible inline disclosure for root notes */
+.top-note-disclosure>summary{display:flex;align-items:center;cursor:pointer;list-style:none}
+.top-note-disclosure>summary::-webkit-details-marker{display:none}
+.top-note-disclosure>summary:before{content:'›';font-size:27px;color:var(--muted);margin-right:8px;transition:transform .15s;flex:0 0 auto}
+.top-note-disclosure[open]>summary:before{transform:rotate(90deg)}
+.top-note-content{padding:12px 0 2px 12px;margin:10px 0 0 8px;border-left:2px solid #e3e7ef}
+.note-entry-list{display:grid;gap:7px;min-width:0}
+.note-add-button{margin-top:9px;background:#eef1f7;color:var(--text);font-weight:650}
+.note-delete-button{margin-top:10px;min-height:38px}
+.note-empty{padding:10px 4px}
+.top-note-disclosure .folder-row{min-width:0;flex:1}
+.top-note-disclosure h3{margin:0 0 4px}
+.inline-note-section{display:block;background:#f6f7fa;padding:10px;border-radius:12px;margin:5px 0}
+.inline-note-section>summary:before{content:'›';font-size:22px;color:var(--muted)}
+.inline-note-section[open]>summary:before{transform:rotate(90deg)}
+.inline-note-section .danger{margin:4px 0}
+
+.inline-note-section.file-row{display:block}
