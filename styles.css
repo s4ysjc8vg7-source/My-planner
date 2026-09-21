@@ -80,3 +80,16 @@
 .file-entry .file-open small,.text-entry small{display:inline-block;margin:2px 0 0}
 .file-entry .note-trash,.text-entry .note-trash{margin-left:auto}
 @media(max-width:520px){.note-folder .note-created{font-size:10px}.color-field-line{gap:8px}}
+
+/* V28 targeted visual cleanup */
+.top-note-disclosure>summary{list-style:none;display:block}
+.top-note-disclosure>summary::-webkit-details-marker{display:none}
+.top-note-disclosure>summary::marker{content:""}
+.note-folder .folder-row{width:100%;gap:7px}
+.note-folder .folder-row .grow{min-width:0}
+.note-folder .folder-row h3{margin:0;font-size:1.05em}
+.note-folder .folder-row .small{line-height:1.2}
+.note-folder .note-created{margin-left:auto}
+.color-field{margin:7px 0}
+.color-field-line{justify-content:flex-start}
+.color-field-line .color-preview{display:none}
