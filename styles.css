@@ -42,3 +42,19 @@
 .inline-note-section .danger{margin:4px 0}
 
 .inline-note-section.file-row{display:block}
+
+/* V25: compact notes layout and unobtrusive trash controls */
+.note-folder.card{padding:8px 10px;margin:6px 0;border-radius:14px}
+.note-folder .big-folder{width:38px;height:38px;font-size:23px;border-radius:11px}
+.note-folder .folder-row{gap:8px}
+.note-folder .top-note-content{padding:7px 0 0 9px;margin:7px 0 0 6px}
+.note-entry-list{gap:4px}
+.inline-note-section{padding:7px 8px;margin:4px 0;border-radius:10px}
+.inline-note-contents{padding:5px 0 5px 12px;margin:5px 0 5px 5px}
+.file-row{padding:8px 7px;gap:8px;margin:1px 0}
+.entry-icon{font-size:21px;width:29px;flex-basis:29px}
+.note-trash{display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px;width:30px;height:30px;min-height:30px;padding:0;margin:3px 0;border-radius:8px;background:#eef0f3!important;color:#7b8494!important;font-size:15px;line-height:1;box-shadow:none}
+.note-trash:active{background:#e0e4ea!important}
+.note-add-button{padding:7px 10px;border-radius:9px;font-size:14px}
+.note-toolbar{margin:5px 0}
+@media(max-width:520px){.note-folder.card{padding:7px 8px}.file-row{padding:7px 5px}.note-trash{width:28px;height:28px;flex-basis:28px}}

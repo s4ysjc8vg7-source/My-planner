@@ -1,4 +1,4 @@
-const CACHE='myplanner-v24';
+const CACHE='myplanner-v25';
 const ASSETS=['./','./index.html','./styles.css','./app.js?v=24','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('message',e=>{if(e.data==='SKIP_WAITING')self.skipWaiting()});
